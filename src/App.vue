@@ -9,7 +9,7 @@
       <span id="brand">Stopwatch</span>
     </div>
     <ul id="stopwatch-records">
-      <li :key="index" v-for="(lap, index) in lapsRecords.slice().reverse()">
+      <li :class="{ red: lap.isSlowest, green: lap.isFastest }" :key="index" v-for="(lap, index) in lapsRecords">
         <span>Lap {{ lapsRecords.length - index }}</span>
         <span>{{ lap.display }}</span>
       </li>
@@ -35,17 +35,15 @@ export default {
       stoppedTimeOffset: 0,
       stoppedTimeOffsetForLap: 0,
       lastLapTime: null, 
-      laps: [],
-      fastestIndex : 0,
-      slowestIndex : 0
+      laps: []
     }
   },
   computed: {
     lapsRecords() {  // [1]
       
-      /*let lapsClone = [...this.laps]
+      let lapsClone = [...this.laps]
 
-      if (lapsClone.length > 2) {
+      if (lapsClone.length >2) {
         lapsClone = lapsClone.map((oneLap) => {
           return {
             ...oneLap,
@@ -66,38 +64,25 @@ export default {
           }
         }
 
+        if(lapsClone[lapsClone.length - 1].time < lapsClone[fastestIndex].time){
+          lapsClone[lapsClone.length - 1].isFastest = true;
+        }
+
+        if(lapsClone[lapsClone.length - 1].time > lapsClone[slowestIndex].time){
+          lapsClone[lapsClone.length - 1].isSlowest = true;
+        }
+
         lapsClone[fastestIndex].isFastest = true
         lapsClone[slowestIndex].isSlowest = true
       }
 
       return lapsClone.reverse()
-      */
 
-      let lapsClone = [...this.laps]
-      let nowIndex = lapsClone.length - 1;
-      this.fastestIndex = nowIndex;
-      
-      if (lapsClone.length > 2) {
-        //lapsClone.length
-        if(lapsClone[nowIndex].time < lapsClone[this.fastestIndex].time){
-            lapsClone[this.fastestIndex].isFastest = false;
-            
-            //lapsClone[nowIndex].isFastest = true;
-        }
-
-        if(lapsClone[nowIndex].time < lapsClone[this.slowestIndex].time){
-            //lapsClone[this.slowestIndex].isSlowest = false;
-            //this.slowestIndex = nowIndex;
-            //lapsClone[nowIndex].isSlowest = true;
-        }
-
-      }
-      return lapsClone;
     }
   },
   watch: { 
     displayTime() {
-      /* example
+
       let lapsClone = [...this.laps];
 
       let elapsedTime = this.currentTime - this.lastLapTime - this.stoppedTimeOffsetForLap
@@ -112,16 +97,7 @@ export default {
 
       this.laps = lapsClone;
 
-      */
-      let elapsedTime = this.currentTime - this.lastLapTime - this.stoppedTimeOffsetForLap
-      let lapTime = (elapsedTime / 1000).toFixed(2)
 
-      this.laps[this.laps.length - 1] = {
-        time: parseFloat(lapTime),
-        display: this.formatTime(lapTime),
-        isFastest: false,
-        isSlowest: false,
-      };
     }
 
   },
@@ -139,7 +115,7 @@ export default {
         this.laps = [{   // [1]
           time: 0,
           display: this.displayTime,
-          isFastest: false,
+          isFastest: true,
           isSlowest: false,
         }];
 
